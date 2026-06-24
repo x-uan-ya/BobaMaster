@@ -3,65 +3,65 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply box-border;
-  }
-
-  html, body, #root {
-    @apply h-full w-full;
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
+  :root {
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-    background-color: #f9f9f9;
-    color: #111;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: hsl(0, 0%, 98%);
+    color: hsl(0, 0%, 10%);
+  }
+
+  /* Touch-friendly minimum tap targets (M3 guideline: 48×48px) */
+  button, [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
   }
 }
 
 @layer components {
-  /* Elevated card */
-  .card {
-    @apply bg-white rounded-lg shadow-card p-4;
+  /* ── M3 Elevated Card ────────────────────────────────────────────── */
+  .m3-card {
+    @apply bg-white rounded-m3-lg shadow-m3-2 p-4;
   }
 
-  /* Outlined card */
-  .card-outlined {
-    @apply bg-white rounded-lg border border-gray-200 p-4;
+  /* ── M3 Outlined Card ────────────────────────────────────────────── */
+  .m3-card-outlined {
+    @apply bg-white rounded-m3-lg border border-gray-200 p-4;
   }
 
-  /* Primary filled button */
+  /* ── M3 Filled Tonal Button ──────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-primary text-white font-semibold text-sm
-           px-5 py-3 rounded-xl min-h-[48px]
+           bg-primary text-primary-on font-semibold text-sm
+           px-6 py-3 rounded-m3-xl
            hover:bg-primary-dark active:scale-95
            transition-all duration-150
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary;
   }
 
-  /* Ghost/text button */
-  .btn-ghost {
+  /* ── M3 Text Button ──────────────────────────────────────────────── */
+  .btn-text {
     @apply inline-flex items-center justify-center gap-2
-           text-gray-500 font-medium text-sm
-           px-4 py-3 rounded-xl min-h-[48px]
-           hover:bg-gray-100 active:scale-95
-           transition-all duration-150;
+           text-primary font-medium text-sm
+           px-4 py-3 rounded-m3-xl
+           hover:bg-primary-light active:scale-95
+           transition-all duration-150
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary;
   }
 
-  /* Error/destructive button */
+  /* ── M3 Error Filled Button ──────────────────────────────────────── */
   .btn-error {
     @apply inline-flex items-center justify-center gap-2
-           bg-error text-white font-semibold text-sm
-           px-5 py-3 rounded-xl min-h-[48px]
+           bg-error text-error-on font-semibold text-sm
+           px-6 py-3 rounded-m3-xl
            hover:opacity-90 active:scale-95
            transition-all duration-150;
   }
 
-  /* Status pill chip */
-  .chip {
+  /* ── Status chip ─────────────────────────────────────────────────── */
+  .status-chip {
     @apply inline-flex items-center gap-1.5 px-3 py-1
            rounded-full text-xs font-semibold;
   }

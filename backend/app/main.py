@@ -26,11 +26,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://boba-master.vercel.app",
-        "http://localhost:5173",  # Vite dev server
-        "http://localhost:3000",  # Alternative dev
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

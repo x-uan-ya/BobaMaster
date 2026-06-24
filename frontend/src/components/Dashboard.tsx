@@ -1,3 +1,14 @@
+/**
+ * Dashboard — Live Operations View (Milestone 8 primary deliverable).
+ *
+ * Layout (12-col grid):
+ *  ┌─────────────────────────── 12 cols ────────────────────────────────┐
+ *  │  Critical Operations Banner (full width)                           │
+ *  ├─────────────────────── 8 cols ─────┬──────── 4 cols ──────────────┤
+ *  │  Live Ingredient State Cards       │  Active Cooking Timers        │
+ *  └────────────────────────────────────┴─────────────────────────────-┘
+ */
+
 import React from "react";
 import { useDashboard } from "../store/dashboardStore";
 import { CircularProgress } from "./CircularProgress";
@@ -5,106 +16,76 @@ import { AlertBanner } from "./AlertBanner";
 import { ActiveTimers } from "./ActiveTimers";
 import type { InventoryIngredient } from "../types";
 
-const MAX_GRAMS: Record<string, number> = {
-  tapioca_pearls: 4000,
-  black_tea:      8000,
-  jasmine_tea:    8000,
-  oolong_tea:     8000,
-  matcha_powder:  1000,
+// Maximum grams considered "full" for percentage calculation
+const INGREDIENT_MAX_GRAMS: Record<string, number> = {
+  tapioca_pearls:  4000,
+  black_tea:       8000,
+  jasmine_tea:     8000,
+  oolong_tea:      8000,
+  matcha_powder:   1000,
 };
 
-function fmt(grams: number) {
-  return grams >= 1000 ? `${(grams / 1000).toFixed(1)}kg` : `${Math.round(grams)}g`;
+function getMaxGrams(ingredient_id: string): number {
+  return INGREDIENT_MAX_GRAMS[ingredient_id] ?? 4000;
 }
 
-function fmtExpiry(iso: string | null): { text: string; urgent: boolean } {
-  if (!iso) return { text: "—", urgent: false };
+function formatGrams(grams: number): string {
+  if (grams >= 1000) return `${(grams / 1000).toFixed(1)}kg`;
+  return `${Math.round(grams)}g`;
+}
+
+function formatExpiry(iso: string | null): string {
+  if (!iso) return "—";
   const diff = new Date(iso).getTime() - Date.now();
-  if (diff <= 0) return { text: "Expired", urgent: true };
+  if (diff <= 0) return "Expired";
   const mins = Math.floor(diff / 60_000);
   const hrs = Math.floor(mins / 60);
   const rem = mins % 60;
-  const urgent = mins < 30;
-  return { text: hrs > 0 ? `${hrs}h ${rem}m` : `${mins}m`, urgent };
+  if (hrs > 0) return `${hrs}h ${rem}m`;
+  return `${mins}m`;
 }
 
-function fmtLabel(id: string) {
+function formatIngredientLabel(id: string): string {
   return id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-// ── Ingredient Card ────────────────────────────────────────────────────────
+// ── Ingredient State Card ──────────────────────────────────────────────────
 
-const IngredientCard: React.FC<{ ingredient: InventoryIngredient }> = ({ ingredient }) => {
-  const max  = MAX_GRAMS[ingredient.ingredient_id] ?? 4000;
-  const pct  = Math.round((ingredient.total_remaining_grams / max) * 100);
-  const { text: expiryText, urgent: expiryUrgent } = fmtExpiry(ingredient.nearest_expiry);
-  const isCritical = pct < 10;
-  const isLow      = pct < 30;
+const IngredientCard: React.FC<{ ingredient: InventoryIngredient }> = ({
+  ingredient,
+}) => {
+  const max = getMaxGrams(ingredient.ingredient_id);
+  const pct = Math.round((ingredient.total_remaining_grams / max) * 100);
+  const expiryLabel = formatExpiry(ingredient.nearest_expiry);
 
-  const statusBg    = isCritical ? "#fde8eb" : isLow ? "#fef3c7" : "#dcfce7";
-  const statusColor = isCritical ? "#b52235" : isLow ? "#d97706" : "#16a34a";
-  const statusText  = isCritical ? "🔴 Low Stock" : isLow ? "🟠 Warning" : "🟢 Healthy";
+  const expiryColor =
+    ingredient.nearest_expiry &&
+    new Date(ingredient.nearest_expiry).getTime() - Date.now() < 30 * 60_000
+      ? "text-error"
+      : "text-on-surface-muted";
 
   return (
-    <div
-      className="animate-fade-in"
-      style={{
-        backgroundColor: "#ffffff",
-        borderRadius: 14,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-        padding: "18px 14px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 10,
-        border: expiryUrgent ? "2px solid #d97706" : "2px solid transparent",
-      }}
-    >
-      <h3 style={{ fontSize: 12, fontWeight: 700, color: "#374151", margin: 0, textAlign: "center" }}>
-        {fmtLabel(ingredient.ingredient_id)}
-      </h3>
-
+    <div className="m3-card flex flex-col items-center gap-3 animate-fade-in">
       <CircularProgress
         value={pct}
         size={110}
-        stroke={11}
-        label={fmt(ingredient.total_remaining_grams)}
-        sublabel={`${pct}%`}
+        stroke={10}
+        label={formatGrams(ingredient.total_remaining_grams)}
+        sublabel={formatIngredientLabel(ingredient.ingredient_id)}
       />
 
-      <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 5 }}>
-        {/* Status badge */}
-        <div style={{
-          backgroundColor: statusBg, color: statusColor,
-          borderRadius: 8, padding: "4px 8px",
-          fontSize: 11, fontWeight: 700, textAlign: "center",
-        }}>
-          {statusText}
-        </div>
-
-        {/* Brewing */}
+      <div className="w-full text-center space-y-0.5">
         {ingredient.active_brewing_qty_grams > 0 && (
-          <div style={{
-            backgroundColor: "#d0f0eb", color: "#1a6b5e",
-            borderRadius: 8, padding: "4px 8px",
-            fontSize: 11, fontWeight: 600, textAlign: "center",
-          }}>
-            🍳 {fmt(ingredient.active_brewing_qty_grams)} brewing
-          </div>
+          <p className="text-xs text-primary font-medium">
+            🍳 {formatGrams(ingredient.active_brewing_qty_grams)} brewing
+          </p>
         )}
-
-        {/* Expiry */}
-        <div style={{
-          backgroundColor: expiryUrgent ? "#fde8eb" : "#f3f4f6",
-          color: expiryUrgent ? "#b52235" : "#6b7280",
-          borderRadius: 8, padding: "4px 8px",
-          fontSize: 11, fontWeight: 600, textAlign: "center",
-        }}>
-          ⏳ {expiryText}
-        </div>
-
-        <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", margin: 0 }}>
-          {ingredient.active_batches.length} batch{ingredient.active_batches.length !== 1 ? "es" : ""}
+        <p className={`text-xs font-medium ${expiryColor}`}>
+          ⏳ Expires: {expiryLabel}
+        </p>
+        <p className="text-xs text-on-surface-muted">
+          {ingredient.active_batches.length} active batch
+          {ingredient.active_batches.length !== 1 ? "es" : ""}
         </p>
       </div>
     </div>
@@ -113,13 +94,20 @@ const IngredientCard: React.FC<{ ingredient: InventoryIngredient }> = ({ ingredi
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
 
-const PLACEHOLDER_IDS = ["tapioca_pearls", "black_tea", "jasmine_tea", "matcha_powder"];
-
 export const Dashboard: React.FC = () => {
   const { state } = useDashboard();
   const { ingredients, alerts, connectionStatus } = state;
 
   const ingredientList = Object.values(ingredients);
+
+  // Show a placeholder grid when no real data has arrived yet
+  const PLACEHOLDER_IDS = [
+    "tapioca_pearls",
+    "black_tea",
+    "jasmine_tea",
+    "matcha_powder",
+  ];
+
   const displayIngredients: InventoryIngredient[] =
     ingredientList.length > 0
       ? ingredientList
@@ -131,75 +119,58 @@ export const Dashboard: React.FC = () => {
           active_batches: [],
         }));
 
+  // Top-priority alert (first BREW_NOW, then WARN, then whatever is first)
   const topAlert =
     alerts.find((a) => a.action === "BREW_NOW") ??
     alerts.find((a) => a.action === "WARN") ??
-    alerts[0] ?? null;
+    alerts[0] ??
+    null;
 
   return (
-    <main
-      aria-label="Operations Dashboard"
-      style={{
-        flex: 1,
-        overflowY: "auto",
-        padding: 20,
-        display: "flex",
-        flexDirection: "column",
-        gap: 20,
-        backgroundColor: "#f4f6f8",
-        minHeight: 0,
-      }}
-    >
-      {/* 1. Alert banner — full width */}
+    <main className="flex-1 overflow-auto p-4 space-y-4" aria-label="Operations Dashboard">
+      {/* ── 1. Critical Operations Banner ─────────────────────────── */}
       <AlertBanner alert={topAlert} />
 
-      {/* 2. Two-column: ingredient grid (left) + timers (right) */}
-      <div style={{ display: "flex", flexDirection: "row", gap: 20, flex: 1, minHeight: 0 }}>
+      {/* ── 2. Ingredient grid + Timers ───────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-        {/* Left — ingredient cards */}
-        <section style={{ flex: "0 0 calc(66% - 10px)", minWidth: 0 }} aria-label="Ingredient Status">
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: "#1f2937", margin: 0 }}>📦 Ingredient Inventory</h2>
-            <span style={{ fontSize: 12, color: "#9ca3af" }}>Live Status</span>
-          </div>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-            gap: 14,
-          }}>
+        {/* Left — 8 cols: Live ingredient state cards */}
+        <section
+          className="lg:col-span-8"
+          aria-label="Live Ingredient Status"
+        >
+          <h2 className="text-sm font-semibold text-on-surface-muted uppercase tracking-wide mb-3">
+            Ingredient Status
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
             {displayIngredients.map((ing) => (
               <IngredientCard key={ing.ingredient_id} ingredient={ing} />
             ))}
           </div>
         </section>
 
-        {/* Right — timers */}
-        <section style={{ flex: "0 0 calc(34% - 10px)", minWidth: 200 }} aria-label="Active Cooking Timers">
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: "#1f2937", margin: 0 }}>⏱️ Active Timers</h2>
-            <span style={{ fontSize: 12, color: "#9ca3af" }}>Real-time</span>
-          </div>
-          <div style={{ backgroundColor: "#ffffff", borderRadius: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.08)", padding: 16 }}>
-            <ActiveTimers />
-          </div>
+        {/* Right — 4 cols: Active Cooking Timers */}
+        <section
+          className="lg:col-span-4"
+          aria-label="Active Cooking Timers"
+        >
+          <h2 className="text-sm font-semibold text-on-surface-muted uppercase tracking-wide mb-3">
+            Active Timers
+          </h2>
+          <ActiveTimers />
         </section>
       </div>
 
-      {/* 3. Offline notice */}
+      {/* ── 3. Connection offline notice ──────────────────────────── */}
       {connectionStatus === "offline" && (
         <div
+          className="m3-card border border-error text-error text-sm flex items-center gap-2"
           role="alert"
-          style={{
-            backgroundColor: "#fde8eb", border: "2px solid #b52235",
-            borderRadius: 12, padding: "14px 18px",
-            display: "flex", alignItems: "center", gap: 12,
-          }}
         >
-          <span style={{ fontSize: 24 }}>⚠️</span>
-          <div>
-            <p style={{ fontWeight: 700, color: "#b52235", margin: 0 }}>Connection Lost</p>
-            <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>Attempting to reconnect to backend…</p>
-          </div>
+          <span className="font-bold">⚠</span>
+          <span>
+            Backend connection lost. Data may be stale. Reconnecting…
+          </span>
         </div>
       )}
     </main>

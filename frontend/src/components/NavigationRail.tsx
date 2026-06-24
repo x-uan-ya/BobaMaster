@@ -1,123 +1,109 @@
+/**
+ * NavigationRail — Left-side M3 Navigation Rail.
+ * Collapses to icon-only on smaller viewports.
+ */
+
 import React from "react";
 import {
-  LayoutDashboard, Package, TrendingUp, Lightbulb,
-  Bell, BarChart2, Settings, ChevronLeft, ChevronRight,
+  LayoutDashboard,
+  Package,
+  TrendingUp,
+  Lightbulb,
+  Bell,
+  BarChart2,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 export type NavPage =
-  | "dashboard" | "inventory" | "forecast" | "insights"
-  | "alerts" | "reports" | "settings";
+  | "dashboard"
+  | "inventory"
+  | "forecast"
+  | "insights"
+  | "alerts"
+  | "reports"
+  | "settings";
 
-const NAV_ITEMS = [
-  { id: "dashboard" as NavPage, label: "Dashboard", icon: <LayoutDashboard size={20} /> },
-  { id: "inventory" as NavPage, label: "Inventory",  icon: <Package size={20} /> },
-  { id: "forecast"  as NavPage, label: "Forecast",   icon: <TrendingUp size={20} /> },
-  { id: "insights"  as NavPage, label: "Insights",   icon: <Lightbulb size={20} /> },
-  { id: "alerts"    as NavPage, label: "Alerts",     icon: <Bell size={20} /> },
-  { id: "reports"   as NavPage, label: "Reports",    icon: <BarChart2 size={20} /> },
-  { id: "settings"  as NavPage, label: "Settings",   icon: <Settings size={20} /> },
+interface NavItem {
+  id: NavPage;
+  label: string;
+  icon: React.ReactNode;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "dashboard",  label: "Dashboard",  icon: <LayoutDashboard size={22} /> },
+  { id: "inventory",  label: "Inventory",  icon: <Package size={22} /> },
+  { id: "forecast",   label: "Forecast",   icon: <TrendingUp size={22} /> },
+  { id: "insights",   label: "Insights",   icon: <Lightbulb size={22} /> },
+  { id: "alerts",     label: "Alerts",     icon: <Bell size={22} /> },
+  { id: "reports",    label: "Reports",    icon: <BarChart2 size={22} /> },
+  { id: "settings",   label: "Settings",   icon: <Settings size={22} /> },
 ];
 
-interface Props {
+interface NavigationRailProps {
   activePage: NavPage;
   onNavigate: (page: NavPage) => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
 }
 
-export const NavigationRail: React.FC<Props> = ({
-  activePage, onNavigate, collapsed, onToggleCollapse,
+export const NavigationRail: React.FC<NavigationRailProps> = ({
+  activePage,
+  onNavigate,
+  collapsed,
+  onToggleCollapse,
 }) => {
-  const width = collapsed ? 64 : 220;
-
   return (
     <nav
       className={`
-        flex flex-col h-full bg-white border-r-2 border-surface-variant
-        transition-all duration-300 shadow-m3-2 z-10
-        ${collapsed ? "w-20" : "w-64"}
+        flex flex-col h-full bg-white border-r border-gray-200
+        transition-all duration-200 shadow-m3-1 z-10
+        ${collapsed ? "w-16" : "w-56"}
       `}
       aria-label="Main navigation"
-      style={{
-        width,
-        minWidth: width,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "#ffffff",
-        borderRight: "1px solid #e5e7eb",
-        boxShadow: "2px 0 4px rgba(0,0,0,0.05)",
-        transition: "width 0.2s ease",
-        overflow: "hidden",
-        zIndex: 10,
-      }}
     >
-      {/* Header */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: collapsed ? "center" : "space-between",
-        padding: "12px 10px",
-        borderBottom: "1px solid #f0f0f0",
-        minHeight: 56,
-      }}>
+      {/* Logo / collapse toggle */}
+      <div className="flex items-center justify-between px-3 py-4 border-b border-gray-100">
         {!collapsed && (
-          <span style={{ fontWeight: 700, color: "#1a6b5e", fontSize: 15, whiteSpace: "nowrap" }}>
-            🧋 BobaFlow
+          <span className="font-bold text-primary text-sm tracking-wide truncate">
+            BobaFlow
           </span>
         )}
         <button
           onClick={onToggleCollapse}
+          className="p-2 rounded-m3-md hover:bg-surface-variant text-on-surface-muted
+                     transition-colors min-h-0 min-w-0"
           aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            width: 36, height: 36, borderRadius: 8, border: "none",
-            background: "transparent", cursor: "pointer", color: "#6b7280",
-            flexShrink: 0,
-          }}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
 
       {/* Nav items */}
-      <ul style={{ flex: 1, padding: "8px 6px", margin: 0, listStyle: "none", overflowY: "auto" }}>
+      <ul className="flex-1 py-2 space-y-1" role="list">
         {NAV_ITEMS.map((item) => {
-          const active = activePage === item.id;
+          const isActive = activePage === item.id;
           return (
-            <li key={item.id} style={{ marginBottom: 2 }}>
+            <li key={item.id}>
               <button
                 onClick={() => onNavigate(item.id)}
-                aria-current={active ? "page" : undefined}
+                className={`
+                  w-full flex items-center gap-3 px-3 py-3 rounded-m3-md mx-1
+                  text-sm font-medium transition-colors duration-150 min-h-0
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary
+                  ${isActive
+                    ? "bg-primary-light text-primary-dark"
+                    : "text-on-surface-muted hover:bg-surface-variant hover:text-on-surface"
+                  }
+                `}
+                aria-current={isActive ? "page" : undefined}
                 title={collapsed ? item.label : undefined}
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "10px 10px",
-                  borderRadius: 10,
-                  border: "none",
-                  cursor: "pointer",
-                  backgroundColor: active ? "#d0f0eb" : "transparent",
-                  color: active ? "#1a6b5e" : "#4b5563",
-                  fontWeight: active ? 700 : 500,
-                  fontSize: 13,
-                  textAlign: "left",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  transition: "background 0.15s",
-                  minHeight: 44,
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#f3f4f6";
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
-                }}
               >
-                <span style={{ flexShrink: 0 }}>{item.icon}</span>
-                {!collapsed && <span>{item.label}</span>}
+                <span className="shrink-0">{item.icon}</span>
+                {!collapsed && (
+                  <span className="truncate">{item.label}</span>
+                )}
               </button>
             </li>
           );

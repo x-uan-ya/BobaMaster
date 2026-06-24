@@ -1,12 +1,18 @@
 /**
- * CircularProgress — Premium SVG-based circular progress ring.
+ * CircularProgress — SVG-based circular progress ring.
  *
- * Color transitions:
+ * Color transitions (M3 spec):
  *   > 50% → success green
  *   20–50% → warning amber
  *   < 20% → error crimson
  *
- * Features: smooth transitions, drop shadow, animated stroke.
+ * Props
+ * ─────
+ *  value      0–100 (percentage)
+ *  size       pixel diameter (default 120)
+ *  stroke     ring stroke width (default 10)
+ *  label      centre label text (e.g. "840g")
+ *  sublabel   smaller text below label (e.g. "pearls")
  */
 
 import React from "react";
@@ -26,12 +32,6 @@ function getColor(value: number): string {
   return "hsl(354, 70%, 42%)";                   // error crimson
 }
 
-function getTrackColor(value: number): string {
-  if (value > 50) return "hsl(142, 71%, 90%)";
-  if (value > 20) return "hsl(38, 92%, 90%)";
-  return "hsl(354, 70%, 92%)";
-}
-
 export const CircularProgress: React.FC<CircularProgressProps> = ({
   value,
   size = 120,
@@ -45,7 +45,6 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (clampedValue / 100) * circumference;
   const color = getColor(clampedValue);
-  const trackColor = getTrackColor(clampedValue);
   const centre = size / 2;
 
   return (
@@ -58,24 +57,16 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
       aria-label={sublabel ? `${sublabel}: ${clampedValue}%` : `${clampedValue}%`}
     >
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <defs>
-          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.15" />
-          </filter>
-        </defs>
-        
         {/* Track */}
         <circle
           cx={centre}
           cy={centre}
           r={radius}
           fill="none"
-          stroke={trackColor}
+          stroke="hsl(0, 0%, 90%)"
           strokeWidth={stroke}
-          filter="url(#shadow)"
         />
-        
-        {/* Progress arc with glow */}
+        {/* Progress arc */}
         <circle
           cx={centre}
           cy={centre}
@@ -87,36 +78,28 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           transform={`rotate(-90 ${centre} ${centre})`}
-          style={{ 
-            transition: "stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s ease",
-            filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))"
-          }}
+          style={{ transition: "stroke-dashoffset 0.5s ease, stroke 0.3s ease" }}
         />
-        
         {/* Centre label */}
         {label && (
           <text
             x={centre}
             y={sublabel ? centre - 6 : centre + 5}
             textAnchor="middle"
-            fontSize={size * 0.16}
-            fontWeight="900"
+            fontSize={size * 0.14}
+            fontWeight="700"
             fill="hsl(0, 0%, 10%)"
-            letterSpacing="-0.5"
           >
             {label}
           </text>
         )}
-        
         {sublabel && (
           <text
             x={centre}
-            y={centre + 16}
+            y={centre + 14}
             textAnchor="middle"
-            fontSize={size * 0.09}
-            fontWeight="600"
+            fontSize={size * 0.11}
             fill="hsl(0, 0%, 45%)"
-            letterSpacing="0.3"
           >
             {sublabel}
           </text>
