@@ -18,7 +18,7 @@ from app.models.feedback import FeedbackReportResponse
 logger = logging.getLogger("BobaMaster.API.Feedback")
 router = APIRouter()
 
-_feedback_agent = FeedbackAgent()
+_feedback_agent: FeedbackAgent | None = None
 
 
 @router.get(
@@ -39,7 +39,11 @@ async def get_feedback_report(
         description="Date to analyze in UTC. Defaults to yesterday.",
     ),
 ):
+    global _feedback_agent
     try:
+        if _feedback_agent is None:
+            _feedback_agent = FeedbackAgent()
+        
         if target_date is None:
             target_date = (datetime.now(timezone.utc) - timedelta(days=1)).date()
 

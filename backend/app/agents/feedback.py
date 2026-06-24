@@ -61,7 +61,6 @@ class FeedbackAgent:
     ):
         self._dsn = dsn or self._build_dsn()
         self._report_dir = report_dir or DEFAULT_REPORT_DIR
-        self._report_dir.mkdir(parents=True, exist_ok=True)
         self._now = now or datetime.now(timezone.utc)
 
     @staticmethod
@@ -161,15 +160,24 @@ class FeedbackAgent:
         return report
 
     def _save_report(self, report: FeedbackReport) -> None:
+        try:
+            self._report_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            logger.warning("Cannot create report directory %s: %s", self._report_dir, e)
+            return
+        
         filename = f"feedback_{report.shop_id}_{report.date.isoformat()}.json"
         path = self._report_dir / filename
         payload = {
             **report.__dict__,
             "date": report.date.isoformat(),
         }
-        with open(path, "w", encoding="utf-8") as fh:
-            json.dump(payload, fh, indent=2)
-        logger.debug("Saved feedback report to %s", path)
+        try:
+            with open(path, "w", encoding="utf-8") as fh:
+                json.dump(payload, fh, indent=2)
+            logger.debug("Saved feedback report to %s", path)
+        except OSError as e:
+            logger.warning("Cannot save report to %s: %s", path, e)
 
     def _fetch_transaction_count(self, cur, shop_id: str, start_ts: datetime, end_ts: datetime) -> int:
         cur.execute(
