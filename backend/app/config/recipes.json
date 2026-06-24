@@ -1,0 +1,48 @@
+{
+  "liquids": [
+    "black_tea", "jasmine_tea", "oolong_tea", "thai_tea", "earl_grey_tea",
+    "milk", "coconut_milk", "soy_milk", "water", "lemonade", "coffee_shot"
+  ],
+  "size_multipliers": {
+    "S": 0.70,
+    "M": 1.00,
+    "L": 1.40
+  },
+  "ice_multipliers": {
+    "normal ice": 1.00,
+    "less ice": 1.15,
+    "no ice": 1.30
+  },
+  "recipes": {
+    "Classic Milk Tea": { "tapioca_pearls": 40.0, "black_tea": 200.0, "fructose": 25.0 },
+    "Jasmine Milk Tea": { "tapioca_pearls": 40.0, "jasmine_tea": 200.0, "fructose": 25.0 },
+    "Oolong Milk Tea": { "tapioca_pearls": 40.0, "oolong_tea": 200.0, "fructose": 25.0 },
+    "Thai Milk Tea": { "tapioca_pearls": 40.0, "thai_tea": 200.0, "milk": 30.0, "fructose": 30.0 },
+    "Earl Grey Milk Tea": { "tapioca_pearls": 40.0, "earl_grey_tea": 200.0, "fructose": 25.0 },
+    "Taro Milk Tea": { "tapioca_pearls": 40.0, "taro_powder": 30.0, "water": 150.0, "milk": 50.0, "fructose": 20.0 },
+    "Brown Sugar Pearl Milk": { "tapioca_pearls": 60.0, "brown_sugar_syrup": 40.0, "milk": 200.0 },
+    "Matcha Latte": { "matcha_powder": 8.0, "milk": 200.0, "water": 30.0, "fructose": 20.0 },
+    "Mango Green Tea": { "mango_puree": 40.0, "jasmine_tea": 200.0, "fructose": 10.0 },
+    "Passion Fruit Jasmine Tea": { "passion_fruit_juice": 30.0, "jasmine_tea": 200.0, "fructose": 20.0 },
+    "Peach Oolong Tea": { "peach_syrup": 35.0, "oolong_tea": 200.0, "fructose": 10.0 },
+    "Wintermelon Tea": { "wintermelon_syrup": 40.0, "water": 200.0 },
+    "Grapefruit Green Tea": { "grapefruit_juice": 30.0, "jasmine_tea": 200.0, "fructose": 20.0 },
+    "Coconut Milk Tea": { "black_tea": 150.0, "coconut_milk": 100.0, "fructose": 25.0 },
+    "Coffee Milk Tea": { "black_tea": 100.0, "coffee_shot": 50.0, "milk": 100.0, "fructose": 20.0 },
+    "Honeydew Milk Tea": { "tapioca_pearls": 40.0, "honeydew_powder": 30.0, "water": 150.0, "milk": 50.0, "fructose": 20.0 },
+    "Strawberry Milk Tea": { "tapioca_pearls": 40.0, "strawberry_powder": 30.0, "water": 150.0, "milk": 50.0, "fructose": 20.0 },
+    "Chocolate Milk Tea": { "tapioca_pearls": 40.0, "chocolate_powder": 35.0, "milk": 200.0, "fructose": 15.0 },
+    "Matcha Milk Tea": { "tapioca_pearls": 40.0, "matcha_powder": 8.0, "milk": 200.0, "fructose": 20.0 },
+    "Lychee Green Tea": { "lychee_syrup": 30.0, "jasmine_tea": 200.0, "fructose": 15.0 },
+    "Peach Green Tea": { "peach_syrup": 30.0, "jasmine_tea": 200.0, "fructose": 15.0 },
+    "Honey Green Tea": { "honey": 25.0, "jasmine_tea": 200.0 },
+    "Mango Jasmine Tea": { "mango_puree": 30.0, "jasmine_tea": 200.0, "fructose": 15.0 },
+    "Strawberry Jasmine Tea": { "strawberry_puree": 30.0, "jasmine_tea": 200.0, "fructose": 15.0 },
+    "Wintermelon Lemonade": { "wintermelon_syrup": 35.0, "lemonade": 200.0 },
+    "Lemon Jasmine Tea": { "lemon_juice": 20.0, "jasmine_tea": 200.0, "fructose": 25.0 },
+    "Taro Latte": { "taro_paste": 50.0, "milk": 200.0, "fructose": 15.0 },
+    "Red Bean Matcha Latte": { "matcha_powder": 8.0, "red_bean_topping": 40.0, "milk": 200.0, "fructose": 15.0 },
+    "Black Grass Jelly Milk": { "grass_jelly": 80.0, "brown_sugar_syrup": 30.0, "milk": 180.0 },
+    "Caramel Milk Tea": { "tapioca_pearls": 40.0, "caramel_syrup": 30.0, "black_tea": 180.0, "milk": 30.0, "fructose": 10.0 }
+  }
+}
