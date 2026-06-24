@@ -19,7 +19,8 @@ import type { InventoryUpdate, RecommendationAlert, WsMessage } from "./types";
 // ── Shop configuration (env override possible) ────────────────────────────
 const SHOP_ID = import.meta.env.VITE_SHOP_ID ?? "00000000-0000-0000-0000-000000000001";
 const STORE_NAME = import.meta.env.VITE_STORE_NAME ?? "Downtown Store";
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+// Use relative URL in production, absolute URL for local development
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000');
 
 // ── Placeholder pages (M9+ will fill these in) ────────────────────────────
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (

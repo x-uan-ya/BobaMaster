@@ -38,6 +38,3 @@ docker
 
 # Artifacts (documentation)
 artifacts
-
-# Frontend (if deploying backend separately)
-frontend

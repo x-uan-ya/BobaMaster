@@ -12,7 +12,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { WsMessage, WsConnectionStatus } from "../types";
 
-const WS_BASE_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:8000";
+// Use relative URL in production, absolute URL for local development
+const WS_BASE_URL = import.meta.env.VITE_WS_URL ?? (import.meta.env.MODE === 'production' ? '' : 'ws://localhost:8000');
 const MAX_RETRY_DELAY_MS = 30_000;
 const BASE_RETRY_DELAY_MS = 1_000;
 
