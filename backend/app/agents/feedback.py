@@ -62,6 +62,7 @@ class FeedbackAgent:
         self._dsn = dsn or self._build_dsn()
         self._report_dir = report_dir or DEFAULT_REPORT_DIR
         self._now = now or datetime.now(timezone.utc)
+        self._fs_writable = self._check_filesystem_writable()
 
     @staticmethod
     def _build_dsn() -> str:
@@ -72,6 +73,15 @@ class FeedbackAgent:
             f"user={os.getenv('POSTGRES_USER', 'postgres')} "
             f"password={os.getenv('POSTGRES_PASSWORD', 'postgres')}"
         )
+
+    def _check_filesystem_writable(self) -> bool:
+        """Check if the filesystem is writable (e.g., not Vercel serverless)."""
+        try:
+            test_dir = self._report_dir.parent
+            test_dir.mkdir(parents=True, exist_ok=True)
+            return True
+        except OSError:
+            return False
 
     @staticmethod
     def _normalize_ratio(value: float) -> float:
@@ -160,12 +170,16 @@ class FeedbackAgent:
         return report
 
     def _save_report(self, report: FeedbackReport) -> None:
+        if not self._fs_writable:
+            logger.debug("Skipping report save - filesystem is read-only")
+            return
+
         try:
             self._report_dir.mkdir(parents=True, exist_ok=True)
         except OSError as e:
             logger.warning("Cannot create report directory %s: %s", self._report_dir, e)
             return
-        
+
         filename = f"feedback_{report.shop_id}_{report.date.isoformat()}.json"
         path = self._report_dir / filename
         payload = {
