@@ -15,12 +15,12 @@ from fastapi import APIRouter, HTTPException, Query, status
 from app.models.predictor import ForecastVector, VelocityWindow
 from app.agents.predictor_agent import PredictorAgent
 from app.agents.context_agent import ContextAgent
+from app.services.redis_client import get_redis_client
 
 logger = logging.getLogger("BobaMaster.API.Forecast")
 router = APIRouter()
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-_redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=False)
+_redis_client = get_redis_client()
 _context_agent = ContextAgent(redis_client=_redis_client)
 _predictor = PredictorAgent()
 

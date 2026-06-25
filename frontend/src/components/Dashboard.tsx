@@ -14,7 +14,9 @@ import { useDashboard } from "../store/dashboardStore";
 import { CircularProgress } from "./CircularProgress";
 import { AlertBanner } from "./AlertBanner";
 import { ActiveTimers } from "./ActiveTimers";
+import { AgentPanel } from "./AgentPanel";
 import type { InventoryIngredient } from "../types";
+import type { NavPage } from "./NavigationRail";
 
 // Maximum grams considered "full" for percentage calculation
 const INGREDIENT_MAX_GRAMS: Record<string, number> = {
@@ -77,11 +79,11 @@ const IngredientCard: React.FC<{ ingredient: InventoryIngredient }> = ({
       <div className="w-full text-center space-y-0.5">
         {ingredient.active_brewing_qty_grams > 0 && (
           <p className="text-xs text-primary font-medium">
-            🍳 {formatGrams(ingredient.active_brewing_qty_grams)} brewing
+            Brewing: {formatGrams(ingredient.active_brewing_qty_grams)}
           </p>
         )}
         <p className={`text-xs font-medium ${expiryColor}`}>
-          ⏳ Expires: {expiryLabel}
+          Expires: {expiryLabel}
         </p>
         <p className="text-xs text-on-surface-muted">
           {ingredient.active_batches.length} active batch
@@ -94,7 +96,7 @@ const IngredientCard: React.FC<{ ingredient: InventoryIngredient }> = ({
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
 
-export const Dashboard: React.FC = () => {
+export const Dashboard: React.FC<{ onNavigate?: (page: NavPage) => void }> = ({ onNavigate }) => {
   const { state } = useDashboard();
   const { ingredients, alerts, connectionStatus } = state;
 
@@ -131,7 +133,10 @@ export const Dashboard: React.FC = () => {
       {/* ── 1. Critical Operations Banner ─────────────────────────── */}
       <AlertBanner alert={topAlert} />
 
-      {/* ── 2. Ingredient grid + Timers ───────────────────────────── */}
+      {/* ── 2. AI Agent Controls Panel ────────────────────────────── */}
+      <AgentPanel onNavigate={onNavigate} />
+
+      {/* ── 3. Ingredient grid + Timers ───────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
         {/* Left — 8 cols: Live ingredient state cards */}
@@ -167,7 +172,7 @@ export const Dashboard: React.FC = () => {
           className="m3-card border border-error text-error text-sm flex items-center gap-2"
           role="alert"
         >
-          <span className="font-bold">⚠</span>
+          <span className="font-bold">!</span>
           <span>
             Backend connection lost. Data may be stale. Reconnecting…
           </span>

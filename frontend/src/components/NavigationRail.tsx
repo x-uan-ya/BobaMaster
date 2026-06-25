@@ -67,7 +67,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({
       <div className="flex items-center justify-between px-3 py-4 border-b border-gray-100">
         {!collapsed && (
           <span className="font-bold text-primary text-sm tracking-wide truncate">
-            BobaFlow
+            BobaMaster
           </span>
         )}
         <button

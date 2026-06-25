@@ -1,10 +1,9 @@
 {
-  "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17"
-  },
-  "dependencies": {
-    "lucide-react": "^0.525.0"
+  "name": "bobamaster",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "dev":   "cd frontend && npm run dev"
   }
 }

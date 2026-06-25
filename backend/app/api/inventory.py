@@ -16,6 +16,7 @@ from app.models.inventory import (
 )
 from app.agents.inventory_agent import InventoryAgent
 from app.services.inventory_service import InventoryService
+from app.services.redis_client import get_redis_client
 from app.api.websocket import broadcast_inventory_update
 
 logger = logging.getLogger("BobaMaster.API.Inventory")
@@ -24,8 +25,7 @@ router = APIRouter()
 # ---------------------------------------------------------------------------
 # Dependency: shared Redis client and agent instances
 # ---------------------------------------------------------------------------
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-_redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=False)
+_redis_client = get_redis_client()
 _inventory_service = InventoryService(_redis_client)
 _inventory_agent = InventoryAgent(_inventory_service)
 

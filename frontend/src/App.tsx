@@ -14,6 +14,10 @@ import { useWebSocket } from "./hooks/useWebSocket";
 import { NavigationRail, type NavPage } from "./components/NavigationRail";
 import { TopBar } from "./components/TopBar";
 import { Dashboard } from "./components/Dashboard";
+import { InventoryPage } from "./components/InventoryPage";
+import { ForecastPage } from "./components/ForecastPage";
+import { InsightsPage } from "./components/InsightsPage";
+import { FeedbackPage } from "./components/FeedbackPage";
 import type { InventoryUpdate, RecommendationAlert, WsMessage } from "./types";
 
 // ── Shop configuration (env override possible) ────────────────────────────
@@ -26,7 +30,6 @@ const API_BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.MODE === '
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <main className="flex-1 flex items-center justify-center p-8">
     <div className="m3-card text-center max-w-sm w-full">
-      <p className="text-3xl mb-3">🚧</p>
       <h2 className="text-lg font-semibold text-on-surface mb-1">{title}</h2>
       <p className="text-sm text-on-surface-muted">
         This page will be built in a future milestone.
@@ -96,12 +99,12 @@ export default function App() {
 
   const renderPage = () => {
     switch (activePage) {
-      case "dashboard": return <Dashboard />;
-      case "inventory": return <PlaceholderPage title="Inventory Ledger" />;
-      case "forecast":  return <PlaceholderPage title="Demand Forecast" />;
-      case "insights":  return <PlaceholderPage title="Insights & Logs" />;
-      case "alerts":    return <PlaceholderPage title="Alert History" />;
-      case "reports":   return <PlaceholderPage title="Reports" />;
+      case "dashboard": return <Dashboard onNavigate={setActivePage} />;
+      case "inventory": return <InventoryPage />;
+      case "forecast":  return <ForecastPage />;
+      case "insights":  return <InsightsPage />;
+      case "alerts":    return <FeedbackPage />;
+      case "reports":   return <FeedbackPage />;
       case "settings":  return <PlaceholderPage title="Settings" />;
     }
   };

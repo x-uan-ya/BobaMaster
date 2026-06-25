@@ -6,12 +6,12 @@ from uuid import UUID
 
 from app.models.context import ContextVector
 from app.agents.context_agent import ContextAgent
+from app.services.redis_client import get_redis_client
 
 logger = logging.getLogger("BobaMaster.API.Context")
 router = APIRouter()
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-_redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=False)
+_redis_client = get_redis_client()
 _context_agent = ContextAgent(redis_client=_redis_client)
 
 

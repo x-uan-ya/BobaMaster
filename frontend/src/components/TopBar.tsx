@@ -48,7 +48,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     >
       {/* Left — logo text */}
       <div className="flex items-center gap-2">
-        <span className="text-lg font-bold text-primary">🧋 BobaMaster</span>
+        <span className="text-lg font-bold text-primary">BobaMaster</span>
         <span className="hidden sm:block text-on-surface-muted text-sm">
           — {storeName}
         </span>

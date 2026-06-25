@@ -28,16 +28,12 @@ from app.agents.inventory_agent import InventoryAgent
 from app.agents.context_agent import ContextAgent
 from app.services.inventory_service import InventoryService
 from app.services.recommendation_service import RecommendationService
+from app.services.redis_client import get_redis_client
 
 logger = logging.getLogger("BobaMaster.API.Operations")
 router = APIRouter()
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Shared singletons (Redis + agents)
-# ──────────────────────────────────────────────────────────────────────────────
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-_redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=False)
-
+_redis_client = get_redis_client()
 _inv_service  = InventoryService(_redis_client)
 _inv_agent    = InventoryAgent(_inv_service)
 _ctx_agent    = ContextAgent(redis_client=_redis_client)
