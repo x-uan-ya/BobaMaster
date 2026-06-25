@@ -33,6 +33,7 @@ interface Report {
   pearl_safety_factor_after: number;
   updated: boolean;
   generated_at: string;
+  demo_mode: boolean;
 }
 
 // ── Metric tile ────────────────────────────────────────────────────────────
@@ -137,7 +138,7 @@ export const FeedbackPage: React.FC = () => {
           {loading ? "Running Audit…" : "Run Feedback Agent"}
         </button>
         <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 16, alignSelf: "flex-end" }}>
-          Note: requires historical data in PostgreSQL. Uses mock data in demo mode.
+          Connects to FeedbackAgent — works in demo mode when PostgreSQL is offline.
         </p>
       </div>
 
@@ -181,6 +182,36 @@ export const FeedbackPage: React.FC = () => {
               Generated {new Date(report.generated_at).toLocaleTimeString()}
             </span>
           </div>
+
+          {/* Demo mode notice */}
+          {report.demo_mode && (
+            <div style={{
+              backgroundColor: "#eff6ff", border: "1.5px solid #93c5fd",
+              borderRadius: 10, padding: "10px 16px", marginBottom: 20,
+              display: "flex", alignItems: "flex-start", gap: 10,
+            }}>
+              <div style={{
+                width: 20, height: 20, borderRadius: "50%", backgroundColor: "#3b82f6",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0, marginTop: 1,
+              }}>
+                <span style={{ color: "#fff", fontSize: 11, fontWeight: 800 }}>i</span>
+              </div>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#1d4ed8", margin: "0 0 3px" }}>
+                  Demo Mode — Synthetic Data
+                </p>
+                <p style={{ fontSize: 12, color: "#1e40af", margin: 0, lineHeight: 1.5 }}>
+                  PostgreSQL is not running so FeedbackAgent generated realistic synthetic data
+                  for this date. The safety buffer tuning logic still runs on this data.
+                  To use real historical data, start PostgreSQL with{" "}
+                  <code style={{ backgroundColor: "#dbeafe", padding: "1px 4px", borderRadius: 3 }}>
+                    docker-compose up -d
+                  </code>.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* KPI grid */}
           <div style={{

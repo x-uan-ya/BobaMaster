@@ -48,6 +48,7 @@ class FeedbackReport:
     pearl_safety_factor_after: float
     updated: bool
     generated_at: str
+    demo_mode: bool = False
 
 
 class FeedbackAgent:
@@ -90,10 +91,64 @@ class FeedbackAgent:
         return max(0.0, min(1.0, value))
 
     def run_for_date(self, shop_id: str, target_date: date) -> FeedbackReport:
-        report = self._gather_metrics(shop_id, target_date)
+        """
+        Run the feedback audit for a given date.
+
+        If PostgreSQL is unreachable, returns a synthetic demo report so the
+        page is fully functional without a live database.
+        """
+        try:
+            report = self._gather_metrics(shop_id, target_date)
+        except Exception as db_err:
+            logger.warning(
+                f"PostgreSQL unavailable ({type(db_err).__name__}). "
+                "Returning synthetic demo report."
+            )
+            report = self._demo_report(shop_id, target_date)
+
         output = self._tune_pearl_safety_factor(report)
         self._save_report(output)
         return output
+
+    def _demo_report(self, shop_id: str, target_date: date) -> FeedbackReport:
+        """
+        Synthetic but realistic demo data used when PostgreSQL is unavailable.
+        Values represent a moderate-performing shift: low waste, one stockout.
+        """
+        import random, hashlib
+        # Seed from date so the same date always returns the same numbers
+        seed = int(hashlib.md5(f"{shop_id}{target_date}".encode()).hexdigest(), 16) % (2**32)
+        rng = random.Random(seed)
+
+        total_transactions = rng.randint(45, 120)
+        total_prepared = rng.uniform(6000, 14000)
+        waste_ratio = rng.uniform(0.04, 0.22)
+        waste_total = round(total_prepared * waste_ratio, 2)
+        stockout_minutes = rng.choice([0, 0, 0, 5, 10, 15])
+        mape = rng.uniform(0.06, 0.19)
+        total_feedback = max(1, rng.randint(3, total_transactions // 5))
+        acceptance = rng.uniform(0.65, 0.92)
+        ignored = rng.uniform(0.04, 0.20)
+        delayed = max(0.0, 1.0 - acceptance - ignored)
+
+        return FeedbackReport(
+            shop_id=shop_id,
+            date=target_date,
+            total_transactions=total_transactions,
+            total_waste_grams=waste_total,
+            total_prepared_grams=round(total_prepared, 2),
+            mape=round(mape, 4),
+            acceptance_rate=round(acceptance, 4),
+            ignored_rate=round(ignored, 4),
+            delayed_rate=round(delayed, 4),
+            pearl_waste_ratio=round(waste_ratio, 4),
+            stockout_minutes=stockout_minutes,
+            pearl_safety_factor_before=1.20,
+            pearl_safety_factor_after=1.20,
+            updated=False,
+            generated_at=self._now.isoformat(),
+            demo_mode=True,
+        )
 
     def _gather_metrics(self, shop_id: str, target_date: date) -> FeedbackReport:
         start_ts = datetime(target_date.year, target_date.month, target_date.day, tzinfo=timezone.utc)
@@ -260,11 +315,18 @@ class FeedbackAgent:
         return float(row["value"])
 
     def _write_safety_factor(self, factor: float) -> None:
-        with psycopg2.connect(self._dsn) as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    "INSERT INTO system_settings (key, value) VALUES (%s, %s) "
-                    "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;",
-                    ("pearl_safety_buffer_factor", str(factor)),
-                )
-                conn.commit()
+        """Write updated safety factor to PostgreSQL. Silently ignored if DB is unavailable."""
+        try:
+            with psycopg2.connect(self._dsn) as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "INSERT INTO system_settings (key, value) VALUES (%s, %s) "
+                        "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;",
+                        ("pearl_safety_buffer_factor", str(factor)),
+                    )
+                    conn.commit()
+        except Exception as e:
+            logger.warning(
+                f"Could not persist safety factor to PostgreSQL ({type(e).__name__}). "
+                "Value is applied in-memory only for this session."
+            )

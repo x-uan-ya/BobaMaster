@@ -1,4 +1,6 @@
+import json
 import logging
+from pathlib import Path
 from fastapi import APIRouter, HTTPException, status
 from app.models.pos import POSWebhookPayload, POSWebhookResponse
 from app.agents.decompo_agent import DecompoAgent
@@ -6,8 +8,23 @@ from app.agents.decompo_agent import DecompoAgent
 logger = logging.getLogger("BobaMaster.API.POS")
 router = APIRouter()
 
-# Initialize the recipe decomposition agent instance
 decompo_agent = DecompoAgent()
+
+_RECIPES_PATH = Path(__file__).resolve().parents[1] / "config" / "recipes.json"
+
+
+@router.get(
+    "/recipes",
+    status_code=status.HTTP_200_OK,
+    summary="Get recipe configuration",
+    description="Returns the full recipes.json bill-of-materials used by DecompoAgent.",
+)
+async def get_recipes():
+    try:
+        with open(_RECIPES_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post(
     "/webhook",

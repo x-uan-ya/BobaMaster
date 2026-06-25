@@ -53,7 +53,13 @@ app.include_router(ws_router)   # WebSocket — no prefix, mounts at /ws/shop/{s
 
 @app.get("/health", tags=["Telemetry"])
 async def health_check():
-    return {"status": "healthy", "service": "BobaMaster Backend"}
+    from app.services.redis_client import is_using_fallback
+    return {
+        "status": "healthy",
+        "service": "BobaMaster Backend",
+        "redis_mode": "in-memory" if is_using_fallback() else "redis",
+        "version": "1.0.0",
+    }
 
 
 if __name__ == "__main__":

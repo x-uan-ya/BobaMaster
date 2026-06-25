@@ -18,6 +18,7 @@ import { InventoryPage } from "./components/InventoryPage";
 import { ForecastPage } from "./components/ForecastPage";
 import { InsightsPage } from "./components/InsightsPage";
 import { FeedbackPage } from "./components/FeedbackPage";
+import { SettingsPage } from "./components/SettingsPage";
 import type { InventoryUpdate, RecommendationAlert, WsMessage } from "./types";
 
 // ── Shop configuration (env override possible) ────────────────────────────
@@ -26,8 +27,10 @@ const STORE_NAME = import.meta.env.VITE_STORE_NAME ?? "Downtown Store";
 // Use relative URL in production, absolute URL for local development
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000');
 
-// ── Placeholder pages (M9+ will fill these in) ────────────────────────────
-const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
+// ── Placeholder pages ─────────────────────────────────────────────────────
+// (kept for any future pages that are not yet implemented)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _PlaceholderPage: React.FC<{ title: string }> = (_props) => (
   <main className="flex-1 flex items-center justify-center p-8">
     <div className="m3-card text-center max-w-sm w-full">
       <h2 className="text-lg font-semibold text-on-surface mb-1">{title}</h2>
@@ -105,7 +108,7 @@ export default function App() {
       case "insights":  return <InsightsPage />;
       case "alerts":    return <FeedbackPage />;
       case "reports":   return <FeedbackPage />;
-      case "settings":  return <PlaceholderPage title="Settings" />;
+      case "settings":  return <SettingsPage />;
     }
   };
 

@@ -1,0 +1,18 @@
+{
+  "shop_id": "00000000-0000-0000-0000-000000000001",
+  "date": "2026-06-24",
+  "total_transactions": 75,
+  "total_waste_grams": 2490.64,
+  "total_prepared_grams": 13772.47,
+  "mape": 0.0772,
+  "acceptance_rate": 0.6938,
+  "ignored_rate": 0.1962,
+  "delayed_rate": 0.11,
+  "pearl_waste_ratio": 0.1808,
+  "stockout_minutes": 15,
+  "pearl_safety_factor_before": 1.2,
+  "pearl_safety_factor_after": 1.25,
+  "updated": true,
+  "generated_at": "2026-06-25T07:24:17.888330+00:00",
+  "demo_mode": true
+}

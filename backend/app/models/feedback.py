@@ -28,3 +28,4 @@ class FeedbackReportResponse(BaseModel):
     pearl_safety_factor_after: float
     updated: bool
     generated_at: datetime
+    demo_mode: bool = False   # True when PostgreSQL was unavailable

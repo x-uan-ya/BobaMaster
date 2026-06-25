@@ -6,9 +6,8 @@
  * and see how context factors (school session, weather, rain) shift the forecast.
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { RefreshCw, TrendingUp, Info } from "lucide-react";
-import { CircularProgress } from "./CircularProgress";
 
 const API  = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 const SHOP = import.meta.env.VITE_SHOP_ID  ?? "00000000-0000-0000-0000-000000000001";
