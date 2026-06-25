@@ -27,19 +27,8 @@ const STORE_NAME = import.meta.env.VITE_STORE_NAME ?? "Downtown Store";
 // Use relative URL in production, absolute URL for local development
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000');
 
-// ── Placeholder pages ─────────────────────────────────────────────────────
+// Placeholder pages
 // (kept for any future pages that are not yet implemented)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _PlaceholderPage: React.FC<{ title: string }> = (_props) => (
-  <main className="flex-1 flex items-center justify-center p-8">
-    <div className="m3-card text-center max-w-sm w-full">
-      <h2 className="text-lg font-semibold text-on-surface mb-1">{title}</h2>
-      <p className="text-sm text-on-surface-muted">
-        This page will be built in a future milestone.
-      </p>
-    </div>
-  </main>
-);
 
 // ── WebSocket message consumer ─────────────────────────────────────────────
 function WsMessageConsumer({

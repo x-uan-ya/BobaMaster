@@ -78,8 +78,11 @@
 - [x] Add sound chime and interaction polishing
 
 ## Milestone 10: Closed-Loop Daily Feedback & Retraining
-- [ ] Add `FeedbackAgent` feedback audit agent with system tuning
-- [ ] Add PostgreSQL schema tables for `system_settings`, `sales_forecasts`, and `sales_actuals`
-- [ ] Create FastAPI feedback router and wire it into `app/main.py`
-- [ ] Add feedback endpoint tests and documentation
+- [x] Add `FeedbackAgent` feedback audit agent with system tuning
+- [x] Add PostgreSQL schema tables for `system_settings`, `sales_forecasts`, and `sales_actuals`
+- [x] Create FastAPI feedback router and wire it into `app/main.py`
+- [x] Add feedback endpoint tests and documentation
+- [x] Frontend FeedbackPage wired to feedback API endpoint
+- [x] Fixed inventory refresh on waste/cook operations
+- [x] Fixed POS webhook to apply deductions and broadcast real-time inventory updates via WebSocket
 

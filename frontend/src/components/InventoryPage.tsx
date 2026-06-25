@@ -102,7 +102,8 @@ const BatchRow: React.FC<{
   batch: PreparedBatch;
   onComplete: (batchId: string, ingredientId: string) => Promise<void>;
   onWaste: (batchId: string, ingredientId: string, qty: number) => Promise<void>;
-}> = ({ batch, onComplete, onWaste }) => {
+  onRefresh: () => void;
+}> = ({ batch, onComplete, onWaste, onRefresh }) => {
   const { text, urgentPct, color } = fmtExpiry(batch.expires_at);
   const isBrewing = !batch.completed_at;
   const [wasteOpen, setWasteOpen] = useState(false);
@@ -111,18 +112,26 @@ const BatchRow: React.FC<{
 
   const handleComplete = async () => {
     setBusy(true);
-    await onComplete(batch.batch_id, batch.ingredient_id);
-    setBusy(false);
+    try {
+      await onComplete(batch.batch_id, batch.ingredient_id);
+      onRefresh();
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleWaste = async () => {
     const qty = parseFloat(wasteVal);
     if (isNaN(qty) || qty <= 0) return;
     setBusy(true);
-    await onWaste(batch.batch_id, batch.ingredient_id, qty);
-    setBusy(false);
-    setWasteOpen(false);
-    setWasteVal("");
+    try {
+      await onWaste(batch.batch_id, batch.ingredient_id, qty);
+      onRefresh();
+      setWasteOpen(false);
+      setWasteVal("");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -488,19 +497,27 @@ const IngredientCard: React.FC<{
   const statusLabel = pct < 10 ? "Critical" : pct < 30 ? "Low" : "Healthy";
 
   const handleComplete = async (batchId: string, ingredientId: string) => {
-    await fetch(`${API}/api/v1/inventory/brew/complete`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shop_id: SHOP, ingredient_id: ingredientId, batch_id: batchId }),
-    });
-    onRefresh();
+    try {
+      await fetch(`${API}/api/v1/inventory/brew/complete`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shop_id: SHOP, ingredient_id: ingredientId, batch_id: batchId }),
+      });
+      onRefresh();
+    } catch (e) {
+      console.error("Complete batch error:", e);
+    }
   };
 
   const handleWaste = async (batchId: string, ingredientId: string, qty: number) => {
-    await fetch(`${API}/api/v1/inventory/waste`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shop_id: SHOP, ingredient_id: ingredientId, batch_id: batchId, waste_qty_grams: qty }),
-    });
-    onRefresh();
+    try {
+      await fetch(`${API}/api/v1/inventory/waste`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shop_id: SHOP, ingredient_id: ingredientId, batch_id: batchId, waste_qty_grams: qty }),
+      });
+      onRefresh();
+    } catch (e) {
+      console.error("Waste log error:", e);
+    }
   };
 
   const handleRecalibrate = async () => {
@@ -523,7 +540,7 @@ const IngredientCard: React.FC<{
   const afterAction = () => {
     setShowCook(false);
     setShowSell(false);
-    onRefresh();
+    setTimeout(() => onRefresh(), 100);
   };
 
   return (
@@ -664,6 +681,7 @@ const IngredientCard: React.FC<{
                 key={b.batch_id} batch={b}
                 onComplete={handleComplete}
                 onWaste={handleWaste}
+                onRefresh={onRefresh}
               />
             ))}
           </div>

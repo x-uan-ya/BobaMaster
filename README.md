@@ -7,55 +7,33 @@ BobaMaster is a real-time, multi-agent AI operations platform that solves a dece
 Get it wrong in one direction → pearls run out, customers leave angry.  
 Get it wrong in the other → excess stock spoils, $$$  thrown in the bin.
 
-BobaMaster replaces human guesswork with a closed-loop AI agent pipeline that perceives live sales data, forecasts demand, and tells kitchen staff *exactly* when to act — with a natural language explanation from Gemini 1.5 Flash explaining *why*.
+A single mid-sized bubble tea shop wastes **$30–$80 of ingredients per day** from manual inventory mismanagement alone.
 
----
-
-## 🎥 Demo
-
-> _[YouTube demo link — add before submission]_
-
----
-
-## 📋 Table of Contents
-
-1. [Problem Statement](#1-problem-statement)
-2. [Solution Overview](#2-solution-overview)
-3. [Multi-Agent Architecture](#3-multi-agent-architecture)
-4. [Key Concepts Applied](#4-key-concepts-applied)
-5. [Tech Stack](#5-tech-stack)
-6. [Project Structure](#6-project-structure)
-7. [Setup & Installation](#7-setup--installation)
-8. [Running the Application](#8-running-the-application)
-9. [Frontend Deployment (Vercel)](#9-frontend-deployment-vercel)
-10. [API Reference](#10-api-reference)
-11. [Security](#11-security)
-12. [Testing](#12-testing)
-13. [Roadmap](#13-roadmap)
-
----
-
-## 1. Problem Statement
+## 🎯 The Problem
 
 Bubble tea shops face a unique inventory challenge:
 
-| Ingredient | Cook Time | Shelf Life (once cooked) |
-|---|---|---|
-| Tapioca Pearls | ~50 minutes | ~4 hours |
-| Tea Base | ~15 minutes | ~6 hours |
+| Challenge | Impact |
+|---|---|
+| Tapioca pearls take ~50 min to cook but stay fresh ~4 hours | Staff must decide now for demand 1 hour away |
+| Tea base takes ~15 min but stays fresh ~6 hours | Wrong prediction = stockouts OR waste |
+| Peak demand times are predictable but volatile | Rain, school rush, local events create spikes |
+| Staff rely on hunches, not data | Margins are tight; waste cascades |
 
-Staff must decide *now* whether to start cooking — for demand that won't materialise for another hour. Manual prediction leads to:
+**Real scenario:** It's 3 PM, a bubble tea shop has 400g of pearls left. School ends at 3:30 PM. Cook now or wait? If you're wrong, you either run out during the rush or throw away a fresh batch at 7 PM closing.
 
-- **Stockouts** during school rush / rainy days → angry customers, lost revenue
-- **Over-preparation** near closing time → kilograms of pearls thrown away nightly
+## ✨ The Solution
 
-A single mid-sized bubble tea shop can waste $30–$80 of ingredients per day from this problem alone.
+BobaMaster replaces human guesswork with a **closed-loop AI agent pipeline** that:
 
----
+1. **Perceives:** Reads real-time POS sales, weather, school calendar
+2. **Forecasts:** Uses demand patterns to predict consumption for t+30/60/120 min  
+3. **Decides:** Applies safety stock algorithms to determine: BREW_NOW / WARN / WAIT
+4. **Explains:** Calls Gemini 1.5 Flash to generate a 1-2 sentence staff explanation (*"School rush starting in 15 mins. Pearls projected to hit zero at 3:47 PM. Start cook now."*)
+5. **Broadcasts:** Sends the alert to the kitchen display tablet in real-time via WebSocket
+6. **Learns:** Each night, analyzes forecast accuracy, waste, and auto-tunes safety buffers for tomorrow
 
-## 2. Solution Overview
-
-BobaMaster operates as a **Sense → Plan → Act** AI agent loop running continuously alongside the POS system:
+## 🏗️ Architecture: 7-Agent Pipeline
 
 ```
 POS Sale ──► DecompoAgent ──► InventoryAgent ──► OpsDeciderAgent ──► DispatcherAgent ──► KDS Tablet
@@ -63,78 +41,38 @@ POS Sale ──► DecompoAgent ──► InventoryAgent ──► OpsDeciderAge
                               ContextAgent ──► PredictorAgent
                                     ▲
                           Weather / Calendar APIs
+
+Daily ──► FeedbackAgent ──► System Tuning
 ```
 
-When a shortfall is predicted, the `DispatcherAgent` calls **Gemini 1.5 Flash** to generate a concise, staff-facing explanation and broadcasts it over WebSocket to the kitchen display tablet. Staff see *what* to do and *why* — in plain language.
+| Agent | Role | Key Tech |
+|---|---|---|
+| **DecompoAgent** | Parse POS transaction → recipe deductions | Pydantic V2, FIFO scaling |
+| **ContextAgent** | Weather, school calendar, local events | Redis cache, mock adapters |
+| **PredictorAgent** | Demand forecast for t+30/60/120 min | Linear regression + context multipliers |
+| **InventoryAgent** | FIFO batch lifecycle, expiry sweep | Redis sorted sets, pipelining |
+| **OpsDeciderAgent** | Safety stock → BREW_NOW / WARN / WAIT | Deterministic math, 10-min dedup |
+| **DispatcherAgent** | Gemini explanation + WebSocket broadcast | Gemini 1.5 Flash, retry/fallback |
+| **FeedbackAgent** | Daily MAPE audit, safety buffer tuning | PostgreSQL, synthetic data fallback |
 
----
+## 🔑 Key Concepts Applied
 
-## 3. Multi-Agent Architecture
+### ✅ Multi-Agent System (ADK)
+Seven purpose-built agents form an event-driven pipeline. Each is independently testable, has a defined input/output contract, and can be replaced or enhanced without affecting others.
 
-The system is composed of **7 specialized agents**, each with a single responsibility:
-
-### Agent Pipeline
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        Agent Pipeline                               │
-│                                                                     │
-│  POS Event ──► [1] DecompoAgent                                     │
-│                     │ ingredient deductions                         │
-│                     ▼                                               │
-│               [4] InventoryAgent  ◄──────────────────┐             │
-│                     │ live stock state                │             │
-│                     ▼                                 │             │
-│               [5] OpsDeciderAgent                     │             │
-│                     │ BREW_NOW / WARN / WAIT          │             │
-│                     ▼                                 │             │
-│               [6] DispatcherAgent ──► WebSocket ──► KDS Tablet      │
-│                     │                                │             │
-│                     ▼                                │             │
-│  Clock ──► [2] ContextAgent ──► [3] PredictorAgent ──┘             │
-│                                                                     │
-│  Daily ──► [7] FeedbackAgent ──► parameter tuning                   │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-| # | Agent | Role | Key Technology |
-|---|---|---|---|
-| 1 | **DecompoAgent** | Parse POS transactions → raw ingredient deductions using recipe BOM | Pydantic V2, FIFO scaling |
-| 2 | **ContextAgent** | Gather weather, school calendar, local events → context vector | Redis cache (15-min TTL), mock adapters |
-| 3 | **PredictorAgent** | Statistical demand forecast for t+30/60/120 min | Linear regression heuristic (LightGBM-ready) |
-| 4 | **InventoryAgent** | FIFO batch lifecycle, expiry sweeper, recalibration | Redis sorted sets, pipelining |
-| 5 | **OpsDeciderAgent** | Safety stock algorithm → BREW_NOW / WARN / WAIT | Deterministic arithmetic, 10-min cooldown dedup |
-| 6 | **DispatcherAgent** | Gemini explanation + WebSocket broadcast | Gemini 1.5 Flash, FastAPI WebSocket, retry/fallback |
-| 7 | **FeedbackAgent** | Daily MAPE analysis, waste audit, safety buffer tuning | psycopg2, PostgreSQL |
-
-### Communication Pattern
-
-Agents are **decoupled** — they do not call each other directly. They communicate through:
-- **Redis** (short-term state: active batches, context cache, velocity windows)
-- **PostgreSQL** (long-term log: recommendation history, feedback, sales)
-- **WebSocket** (real-time push: kitchen display alerts)
-
----
-
-## 4. Key Concepts Applied
-
-### ✅ Multi-Agent System
-Seven purpose-built agents form an event-driven pipeline. Each agent is independently testable, has a defined input/output contract, and can be replaced without affecting the others (e.g., swap `MockWeatherAdapter` for a real OpenWeatherMap adapter with zero changes to `ContextAgent`).
-
-### ✅ MCP Server Pattern
-The `DispatcherAgent` implements the **Model Context Protocol** pattern: it constructs a rich structured context (inventory levels, forecast vectors, weather, school session status) and passes it to Gemini 1.5 Flash as a single coherent prompt. The LLM receives exactly what it needs and nothing more.
+### ✅ Model Context Protocol (MCP) Pattern
+The `DispatcherAgent` implements the **MCP pattern**: it constructs a rich structured context (inventory levels, forecast vectors, weather, school status) and passes it to Gemini 1.5 Flash as a coherent prompt. The LLM receives *exactly* what it needs.
 
 ### ✅ Security Features
-- No API keys in source code — all secrets loaded from environment variables
-- `.env` files blocked from git via `.gitignore`
-- Pydantic V2 strict validation on all API inputs (prevents injection via malformed payloads)
-- SQL parameterized queries via psycopg2 (no raw string interpolation)
-- WebSocket connections are shop-scoped (no cross-shop data leakage)
+- No API keys in source code — secrets via environment variables only
+- Pydantic V2 strict validation on all inputs (prevents injection)
+- SQL parameterized queries via psycopg2 (no string interpolation)
+- WebSocket connections scoped per shop (no data leakage)
 
 ### ✅ Deployability
-- Frontend: Vercel (zero-config via `vercel.json`)
-- Backend: Docker Compose (PostgreSQL + Redis) + `uvicorn`
-- Environment variables documented in `.env.example`
+- Frontend: Vercel (zero-config, auto-deploy from GitHub)
+- Backend: Docker Compose (PostgreSQL + Redis) + Uvicorn
+- Graceful degradation: Works with PostgreSQL down (synthetic data mode)
 
 ---
 
