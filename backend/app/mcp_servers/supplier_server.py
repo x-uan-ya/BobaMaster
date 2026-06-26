@@ -59,18 +59,6 @@ class SupplierDataProvider:
                 ],
             },
         ],
-        "matcha_powder": [
-            {
-                "supplier": "Premium Matcha Ltd",
-                "unit": "oz",
-                "price_per_unit": 0.80,
-                "min_order": 16,
-                "lead_time_days": 5,
-                "volume_discounts": [
-                    {"quantity": 64, "discount_percent": 12},
-                ],
-            },
-        ],
         "brown_sugar": [
             {
                 "supplier": "Sugar Source Global",

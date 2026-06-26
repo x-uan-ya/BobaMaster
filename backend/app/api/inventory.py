@@ -34,7 +34,8 @@ TRACKED_INGREDIENTS = [
     "black_tea",
     "jasmine_tea",
     "oolong_tea",
-    "matcha_powder",
+    "thai_tea",
+    "earl_grey_tea",
 ]
 
 

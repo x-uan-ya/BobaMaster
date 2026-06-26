@@ -21,7 +21,6 @@
     "Earl Grey Milk Tea": { "tapioca_pearls": 40.0, "earl_grey_tea": 200.0, "fructose": 25.0 },
     "Taro Milk Tea": { "tapioca_pearls": 40.0, "taro_powder": 30.0, "water": 150.0, "milk": 50.0, "fructose": 20.0 },
     "Brown Sugar Pearl Milk": { "tapioca_pearls": 60.0, "brown_sugar_syrup": 40.0, "milk": 200.0 },
-    "Matcha Latte": { "matcha_powder": 8.0, "milk": 200.0, "water": 30.0, "fructose": 20.0 },
     "Mango Green Tea": { "mango_puree": 40.0, "jasmine_tea": 200.0, "fructose": 10.0 },
     "Passion Fruit Jasmine Tea": { "passion_fruit_juice": 30.0, "jasmine_tea": 200.0, "fructose": 20.0 },
     "Peach Oolong Tea": { "peach_syrup": 35.0, "oolong_tea": 200.0, "fructose": 10.0 },
@@ -32,7 +31,6 @@
     "Honeydew Milk Tea": { "tapioca_pearls": 40.0, "honeydew_powder": 30.0, "water": 150.0, "milk": 50.0, "fructose": 20.0 },
     "Strawberry Milk Tea": { "tapioca_pearls": 40.0, "strawberry_powder": 30.0, "water": 150.0, "milk": 50.0, "fructose": 20.0 },
     "Chocolate Milk Tea": { "tapioca_pearls": 40.0, "chocolate_powder": 35.0, "milk": 200.0, "fructose": 15.0 },
-    "Matcha Milk Tea": { "tapioca_pearls": 40.0, "matcha_powder": 8.0, "milk": 200.0, "fructose": 20.0 },
     "Lychee Green Tea": { "lychee_syrup": 30.0, "jasmine_tea": 200.0, "fructose": 15.0 },
     "Peach Green Tea": { "peach_syrup": 30.0, "jasmine_tea": 200.0, "fructose": 15.0 },
     "Honey Green Tea": { "honey": 25.0, "jasmine_tea": 200.0 },
@@ -41,7 +39,6 @@
     "Wintermelon Lemonade": { "wintermelon_syrup": 35.0, "lemonade": 200.0 },
     "Lemon Jasmine Tea": { "lemon_juice": 20.0, "jasmine_tea": 200.0, "fructose": 25.0 },
     "Taro Latte": { "taro_paste": 50.0, "milk": 200.0, "fructose": 15.0 },
-    "Red Bean Matcha Latte": { "matcha_powder": 8.0, "red_bean_topping": 40.0, "milk": 200.0, "fructose": 15.0 },
     "Black Grass Jelly Milk": { "grass_jelly": 80.0, "brown_sugar_syrup": 30.0, "milk": 180.0 },
     "Caramel Milk Tea": { "tapioca_pearls": 40.0, "caramel_syrup": 30.0, "black_tea": 180.0, "milk": 30.0, "fructose": 10.0 }
   }

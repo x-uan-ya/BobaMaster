@@ -70,12 +70,12 @@ DEFAULT_INGREDIENT_CONFIGS: dict[str, IngredientConfig] = {
         safety_buffer_grams=300.0,
         warn_buffer_grams=800.0,
     ),
-    "matcha_powder": IngredientConfig(
-        ingredient_id="matcha_powder",
-        cook_time_minutes=10,
-        batch_size_grams=500.0,
-        safety_buffer_grams=50.0,
-        warn_buffer_grams=150.0,
+    "thai_tea": IngredientConfig(
+        ingredient_id="thai_tea",
+        cook_time_minutes=15,
+        batch_size_grams=4000.0,
+        safety_buffer_grams=300.0,
+        warn_buffer_grams=800.0,
     ),
 }
 

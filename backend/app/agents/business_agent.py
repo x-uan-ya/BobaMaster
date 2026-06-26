@@ -202,7 +202,7 @@ class BusinessAgent:
                 trend="trending_up",
             ),
             DrinkInsight(
-                drink_name="Matcha Latte (M)",
+                drink_name="Thai Milk Tea (M)",
                 cups_sold_today=64,
                 revenue_estimate=384.0,
                 popularity_rank=2,
@@ -234,10 +234,10 @@ class BusinessAgent:
                 savings_potential=280.0,
             ),
             InventoryOptimization(
-                ingredient_id="matcha_powder",
-                current_level_grams=450.0,
-                recommended_level_grams=600.0,
-                reason="Matcha Latte trending up. Current stock adequate but tight for peak windows.",
+                ingredient_id="thai_tea",
+                current_level_grams=1500.0,
+                recommended_level_grams=2200.0,
+                reason="Thai Milk Tea stable demand. Current stock adequate but increase for consistent availability.",
                 savings_potential=0.0,
             ),
         ]

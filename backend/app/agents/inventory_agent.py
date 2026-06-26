@@ -30,7 +30,6 @@ SHELF_LIFE_MINUTES: dict[str, int] = {
     "coconut_milk": 480,
     "soy_milk": 480,
     "taro_powder": 480,       # mixed paste, refrigerated
-    "matcha_powder": 480,
 }
 DEFAULT_SHELF_LIFE_MINUTES = 360
 
