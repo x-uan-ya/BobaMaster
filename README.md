@@ -1,6 +1,6 @@
 # 🧋 BobaMaster — AI Operations Platform for Bubble Tea Shops
 
-> **Antigravity Hackathon Submission** | Category: Agents for Business
+> **AI Agents: Intensive Vibe Coding Capstone Project** | Category: Agents for Business
 
 BobaMaster is a real-time, multi-agent AI operations platform that solves a deceptively hard problem in the food & beverage industry: **when should a bubble tea shop start cooking the next batch of tapioca pearls?**
 
