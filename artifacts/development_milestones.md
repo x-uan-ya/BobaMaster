@@ -85,7 +85,7 @@ This document outlines a 10-milestone roadmap to build the Bobaflow AI Operation
 *   **Files to create:**
     *   `backend/agents/ops_decider.py`
     *   `backend/tests/test_ops_decider.py`
-*   **How to test:** Seed low pearl inventory (400g) and set a high 60-minute forecast projection (2000g). Run the decider.
+*   **How to test:** Seed low pearl inventory (400g) and set a high 60-minute forecast projection (1000g). Run the decider.
 *   **Expected output:** Decision output logs a critical `BREW_NOW` action with target volume specified.
 
 ---
