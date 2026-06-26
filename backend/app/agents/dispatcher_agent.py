@@ -41,7 +41,7 @@ logger = logging.getLogger("BobaMaster.DispatcherAgent")
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-MODEL_ID       = "gemini-1.5-flash"
+MODEL_ID       = "gemini-2.5-flash"
 MAX_RETRIES    = 3
 RETRY_BASE_S   = 1.0   # seconds; doubles each retry
 

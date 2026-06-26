@@ -5,6 +5,7 @@ psycopg2-binary>=2.9.6
 redis>=4.6.0
 fakeredis>=2.26.2
 google-genai>=0.1.0
+python-dotenv>=1.0.0
 httpx>=0.24.1
 pytest>=7.4.0
 mangum>=0.17.0
