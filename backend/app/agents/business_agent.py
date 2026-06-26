@@ -202,7 +202,7 @@ class BusinessAgent:
                 trend="trending_up",
             ),
             DrinkInsight(
-                drink_name="Thai Milk Tea (M)",
+                drink_name="Oolong Milk Tea (M)",
                 cups_sold_today=64,
                 revenue_estimate=384.0,
                 popularity_rank=2,
@@ -221,24 +221,24 @@ class BusinessAgent:
         optimizations = [
             InventoryOptimization(
                 ingredient_id="tapioca_pearls",
-                current_level_grams=1200.0,
-                recommended_level_grams=2500.0,
-                reason="High demand for pearl drinks (trending up). Current level will deplete by 18:30 PM during evening rush.",
-                savings_potential=150.0,
+                current_level_grams=850.0,
+                recommended_level_grams=1500.0,
+                reason="High demand for pearl drinks (trending up). Current level adequate but could run low by evening rush. Ideal range: 500-2200g.",
+                savings_potential=120.0,
             ),
             InventoryOptimization(
                 ingredient_id="black_tea",
-                current_level_grams=3800.0,
-                recommended_level_grams=3200.0,
-                reason="Excess inventory. Yesterday's batch not fully consumed. Reduce cook batch by 20%.",
-                savings_potential=280.0,
+                current_level_grams=2400.0,
+                recommended_level_grams=3000.0,
+                reason="Good inventory level. Current batch will last until 20:00. No action needed.",
+                savings_potential=0.0,
             ),
             InventoryOptimization(
-                ingredient_id="thai_tea",
-                current_level_grams=1500.0,
-                recommended_level_grams=2200.0,
-                reason="Thai Milk Tea stable demand. Current stock adequate but increase for consistent availability.",
-                savings_potential=0.0,
+                ingredient_id="jasmine_tea",
+                current_level_grams=1800.0,
+                recommended_level_grams=2500.0,
+                reason="Mid-range stock. Recommend cooking next batch in 2 hours to maintain continuity.",
+                savings_potential=80.0,
             ),
         ]
 
@@ -246,8 +246,8 @@ class BusinessAgent:
         estimated_total_cups = 209 + 45  # 45 other drinks
         today_revenue = estimated_total_cups * 6.0  # ~$6 per drink average
 
-        # Waste percentage (waste_grams / total_prepared_grams)
-        waste_pct = 12.3  # 12.3% waste today
+        # Waste percentage (waste_grams / total_prepared_grams) - realistic 8-12%
+        waste_pct = 0.092  # 9.2% waste today (realistic for bubble tea)
 
         # Staff efficiency (0-100) based on recommendation acceptance
         staff_efficiency = 87.5
