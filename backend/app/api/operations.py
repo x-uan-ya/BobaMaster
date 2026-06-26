@@ -113,40 +113,49 @@ async def get_decisions(
     "/trigger-test-alert",
     response_model=OpsDecision,
     status_code=status.HTTP_200_OK,
-    summary="Trigger a deterministic test BREW_NOW alert",
+    summary="Trigger alert using real inventory data",
     description=(
-        "Injects a low-stock + high-forecast scenario for tapioca_pearls and "
-        "runs the decision engine. Used to test the WebSocket broadcast pipeline "
-        "in Milestone 7 without needing real sales data."
+        "Reads real inventory from the database and generates forecasts based on "
+        "actual sales velocity. Bypasses cooldown to ensure the alert fires. "
+        "Use this to test the WebSocket broadcast pipeline with live data."
     ),
 )
 async def trigger_test_alert(
     shop_id: UUID = Query(..., description="Target shop UUID"),
+    ingredient_id: str = Query("tapioca_pearls", description="Ingredient to evaluate"),
+    lat: float = Query(1.3521, description="Shop latitude (for context)"),
+    lon: float = Query(103.8198, description="Shop longitude (for context)"),
 ):
     try:
-        now = datetime.now(timezone.utc)
-        expires = now + timedelta(hours=3)
-
-        # Synthetic low-stock inventory snapshot (400g — well below safety floor)
-        inv = InventoryStateResponse(
-            shop_id=shop_id,
-            ingredient_id="tapioca_pearls",
-            total_remaining_grams=400.0,
-            active_batches=[],
-            active_brewing_qty_grams=0.0,
-            nearest_expiry=expires,
+        # Get real inventory from database
+        inv = _inv_agent.get_inventory_state(shop_id, ingredient_id)
+        
+        # Get context for forecasting
+        context_agent = _get_context_agent()
+        context = context_agent.get_context(shop_id, lat=lat, lon=lon)
+        
+        # Calculate velocity from current stock
+        cfg = DEFAULT_INGREDIENT_CONFIGS.get(ingredient_id)
+        if not cfg:
+            raise HTTPException(status_code=400, detail=f"Unknown ingredient: {ingredient_id}")
+        
+        velocity = VelocityWindow(
+            ingredient_id=ingredient_id,
+            grams_per_min_10m=_estimate_velocity(inv.total_remaining_grams, 10),
+            grams_per_min_30m=_estimate_velocity(inv.total_remaining_grams, 30),
+            grams_per_min_60m=_estimate_velocity(inv.total_remaining_grams, 60),
         )
-        # High-demand forecast (matches milestone spec: 2000g over 60m window)
-        forecast = ForecastVector(
+        
+        # Generate real forecast
+        forecast = _predictor.forecast(
             shop_id=shop_id,
-            ingredient_id="tapioca_pearls",
-            school_multiplier=1.35,
-            temp_multiplier=1.0,
-            rain_multiplier=1.0,
-            t30_grams=1000.0,
-            t60_grams=2000.0,
-            t120_grams=4000.0,
+            ingredient_id=ingredient_id,
+            velocity=velocity,
+            context=context,
+            is_cold_drink_ingredient=True,
+            is_hot_drink_ingredient=False,
         )
+        
         # Use a fresh agent instance with no cooldown so test always fires
         test_agent = OpsDeciderAgent(recommendation_writer=_rec_service.write)
         decision = test_agent.evaluate(inv, forecast)

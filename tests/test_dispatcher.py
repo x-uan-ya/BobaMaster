@@ -106,7 +106,7 @@ def test_dispatch_sets_llm_used_true_on_success():
     broadcaster = MockBroadcaster()
     gemini_mock = _make_gemini_mock({
         "action_string": "Cook Pearls Now",
-        "explanation_text": "400g remaining, demand is 2000g.",
+        "explanation_text": "400g remaining, demand is 1000g.",
     })
     agent = DispatcherAgent(broadcaster=broadcaster, gemini_client=gemini_mock)
     result = asyncio.run(agent.dispatch(_brew_now_payload()))

@@ -181,7 +181,7 @@ Context:
 - Weather: Temp dropping, light rain starting (traditionally increases hot/warm milk tea sales by 15%)
 - Event: Local high school lets out in 15 mins (16:30)
 
-Recommendation: COOK 1 BATCH (2000g) OF PEARLS IMMEDIATELY.
+Recommendation: COOK 1 BATCH (1500g) OF PEARLS IMMEDIATELY.
 ```
 
 **LLM Output (Example Alert):**

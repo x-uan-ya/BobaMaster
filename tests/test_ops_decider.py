@@ -97,7 +97,7 @@ def _make_agent(capture: Optional[list] = None) -> OpsDeciderAgent:
 
 def test_brew_now_when_stock_below_safety_buffer():
     """
-    Milestone spec: stock=400g, forecast=2000g over 60m window.
+    Milestone spec: stock=400g, forecast=1000g over 60m window.
     Pearls cook time = 50m → agent uses t60 horizon.
     runway = 400 - 2000 = -1600 < safety_buffer(200) → BREW_NOW
     """
