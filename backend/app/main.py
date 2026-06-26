@@ -20,6 +20,8 @@ from app.api.context import router as context_router
 from app.api.forecast import router as forecast_router
 from app.api.operations import router as operations_router
 from app.api.feedback import router as feedback_router
+from app.api.business_intelligence import router as business_router
+from app.api.mcp import router as mcp_router
 from app.api.websocket import ws_router, dispatcher_router
 
 # Configure logging
@@ -52,6 +54,8 @@ app.include_router(context_router, prefix="/api/v1/context", tags=["Context Enri
 app.include_router(forecast_router, prefix="/api/v1/forecast", tags=["Demand Forecasting"])
 app.include_router(operations_router, prefix="/api/v1/operations", tags=["Operations Decisions"])
 app.include_router(feedback_router, prefix="/api/v1/feedback", tags=["Feedback"])
+app.include_router(business_router, prefix="/api/v1/business", tags=["Business Intelligence"])
+app.include_router(mcp_router, prefix="/api/v1/mcp", tags=["MCP Integration"])
 app.include_router(dispatcher_router, prefix="/api/v1/dispatcher", tags=["Dispatcher & Alerts"])
 app.include_router(ws_router)   # WebSocket — no prefix, mounts at /ws/shop/{shop_id}
 

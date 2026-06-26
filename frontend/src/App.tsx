@@ -16,7 +16,7 @@ import { TopBar } from "./components/TopBar";
 import { Dashboard } from "./components/Dashboard";
 import { InventoryPage } from "./components/InventoryPage";
 import { ForecastPage } from "./components/ForecastPage";
-import { InsightsPage } from "./components/InsightsPage";
+import { BusinessInsightsPage } from "./components/BusinessInsightsPage";
 import { FeedbackPage } from "./components/FeedbackPage";
 import { SettingsPage } from "./components/SettingsPage";
 import type { InventoryUpdate, RecommendationAlert, WsMessage } from "./types";
@@ -94,7 +94,7 @@ export default function App() {
       case "dashboard": return <Dashboard onNavigate={setActivePage} />;
       case "inventory": return <InventoryPage />;
       case "forecast":  return <ForecastPage />;
-      case "insights":  return <InsightsPage />;
+      case "insights":  return <BusinessInsightsPage />;
       case "alerts":    return <FeedbackPage />;
       case "reports":   return <FeedbackPage />;
       case "settings":  return <SettingsPage />;
